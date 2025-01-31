@@ -65,6 +65,9 @@ require([
       const features = result.features;
 
       if (features.length > 0) {
+        // Mostrar o número de feições encontradas para atualização
+        console.log(`${features.length} feições encontradas para atualização.`);
+        
         // Construir a atualização
         const updates = features.map(function(feature) {
           feature.attributes.TR = trpValue; // Atualiza o campo "TRP"
@@ -75,6 +78,8 @@ require([
         featureLayer.applyEdits({
           updateFeatures: updates
         }).then(function(response) {
+          console.log("Resultado de applyEdits:", response);
+          
           // Confirmar se a edição foi realizada
           if (response.updateFeatureResults && response.updateFeatureResults.length > 0) {
             document.getElementById("message").innerText = "Campo TRP atualizado com sucesso!";
