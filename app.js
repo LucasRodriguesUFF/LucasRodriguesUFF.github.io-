@@ -12,14 +12,16 @@ require([
   let featureLayer;
   let userCredential;
 
-  // URL do Feature Layer (substituída pela URL fornecida)
+  // URL do Feature Layer
   const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
 
   // Função para autenticar o usuário
   function login() {
-    // Solicita o login interativo
     IdentityManager.getCredential(featureLayerURL).then(function(cred) {
       userCredential = cred;
+      console.log("Usuário autenticado com sucesso!");
+
+      // Atualiza a interface do usuário
       document.getElementById("message").innerText = "Usuário autenticado com sucesso!";
       document.getElementById("loginButton").style.display = "none"; // Esconde o botão de login
       document.getElementById("updateButton").disabled = false; // Habilita o botão de atualização
