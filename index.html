@@ -1,40 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Simples</title>
-    <link rel="stylesheet" href="style.css">  <!-- Vincula o CSS -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atualizar TRP no ArcGIS Online</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="container">
+    <h1>Atualizar o Campo "TRP"</h1>
+    <label for="trpInput">Insira o valor para "TRP":</label>
+    <input type="text" id="trpInput" placeholder="Digite o nome">
+    <button onclick="updateTRP()">Atualizar TRP</button>
+    <p id="message"></p>
+  </div>
 
-    <div class="calculator">
-        <input type="text" id="display" class="display" disabled>
-        <div class="buttons">
-            <button class="button" onclick="appendToDisplay('7')">7</button>
-            <button class="button" onclick="appendToDisplay('8')">8</button>
-            <button class="button" onclick="appendToDisplay('9')">9</button>
-            <button class="button" onclick="appendToDisplay('/')">/</button>
-
-            <button class="button" onclick="appendToDisplay('4')">4</button>
-            <button class="button" onclick="appendToDisplay('5')">5</button>
-            <button class="button" onclick="appendToDisplay('6')">6</button>
-            <button class="button" onclick="appendToDisplay('*')">*</button>
-
-            <button class="button" onclick="appendToDisplay('1')">1</button>
-            <button class="button" onclick="appendToDisplay('2')">2</button>
-            <button class="button" onclick="appendToDisplay('3')">3</button>
-            <button class="button" onclick="appendToDisplay('-')">-</button>
-
-            <button class="button" onclick="appendToDisplay('0')">0</button>
-            <button class="button" onclick="appendToDisplay('.')">.</button>
-            <button class="button" onclick="clearDisplay()">C</button>
-            <button class="button" onclick="appendToDisplay('+')">+</button>
-
-            <button class="button" onclick="calculate()">=</button>
-        </div>
-    </div>
-
-    <script src="app.js"></script> <!-- Vincula o JavaScript -->
+  <script src="https://js.arcgis.com/4.24/"></script>
+  <script src="app.js"></script>
 </body>
 </html>
