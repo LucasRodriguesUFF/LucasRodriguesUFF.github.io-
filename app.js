@@ -12,8 +12,8 @@ require([
   let featureLayer;
   let userCredential;
 
-  // URL do Feature Layer
-  const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0"; // Altere para a URL correta
+  // URL do Feature Layer (substituída pela URL fornecida)
+  const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
 
   // Função para autenticar o usuário
   function login() {
@@ -21,6 +21,7 @@ require([
       userCredential = cred;
       document.getElementById("message").innerText = "Usuário autenticado com sucesso!";
       document.getElementById("loginButton").style.display = "none"; // Esconde o botão de login
+      document.getElementById("updateButton").disabled = false; // Habilita o botão de atualização
     }).catch(function(error) {
       alert("Erro de autenticação: " + error.message);
     });
@@ -81,9 +82,13 @@ require([
     });
   };
 
-  // Associa o botão de login
+  // Associa os botões de login e atualização
   document.getElementById("loginButton").addEventListener("click", function() {
     login();
+  });
+
+  document.getElementById("updateButton").addEventListener("click", function() {
+    updateTRP();
   });
 
 });
