@@ -17,6 +17,7 @@ require([
 
   // Função para autenticar o usuário
   function login() {
+    // Solicita o login interativo
     IdentityManager.getCredential(featureLayerURL).then(function(cred) {
       userCredential = cred;
       document.getElementById("message").innerText = "Usuário autenticado com sucesso!";
