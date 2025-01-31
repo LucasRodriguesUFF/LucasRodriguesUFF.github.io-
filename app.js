@@ -46,7 +46,8 @@ require([
 
     // Criar a camada de feições
     featureLayer = new FeatureLayer({
-      url: featureLayerURL
+      url: featureLayerURL,
+      authentication: userCredential // Passar a credencial do usuário
     });
 
     // Query para buscar feições
@@ -62,8 +63,9 @@ require([
 
     queryTask.execute(query).then(function(result) {
       const features = result.features;
-      
+
       if (features.length > 0) {
+        // Construir a atualização
         const updates = features.map(function(feature) {
           feature.attributes.TR = trpValue; // Atualiza o campo "TRP"
           return feature;
