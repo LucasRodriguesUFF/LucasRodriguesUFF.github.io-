@@ -4,54 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Simples</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f4;
-        }
-        .calculator {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        .display {
-            width: 250px;
-            height: 40px;
-            margin-bottom: 20px;
-            font-size: 20px;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            text-align: right;
-        }
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        .button {
-            padding: 20px;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-            background-color: #f0f0f0;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .button:hover {
-            background-color: #ddd;
-        }
-        .button:active {
-            background-color: #ccc;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">  <!-- Vincula o CSS -->
 </head>
 <body>
 
@@ -82,23 +35,6 @@
         </div>
     </div>
 
-    <script>
-        function appendToDisplay(value) {
-            document.getElementById('display').value += value;
-        }
-
-        function clearDisplay() {
-            document.getElementById('display').value = '';
-        }
-
-        function calculate() {
-            try {
-                const result = eval(document.getElementById('display').value);
-                document.getElementById('display').value = result;
-            } catch (error) {
-                document.getElementById('display').value = 'Erro';
-            }
-        }
-    </script>
+    <script src="app.js"></script> <!-- Vincula o JavaScript -->
 </body>
 </html>
