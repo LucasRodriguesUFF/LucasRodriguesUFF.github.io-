@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste de Aplicação</title>
+    <title>Cadastro de Nome na Feature Layer</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://js.arcgis.com/4.26/"></script> <!-- Carregar a ArcGIS API -->
 </head>
 <body>
     <div class="container">
-        <h1>Aplicação de Teste</h1>
-        <p>Insira seu nome e clique no botão abaixo para vê-lo na tela!</p>
+        <h1>Cadastro de Nome</h1>
+        <p>Insira seu nome e registre na Feature Layer</p>
         <input type="text" id="nomeInput" placeholder="Digite seu nome">
-        <button onclick="mostrarNome()">Mostrar Nome</button>
+        <button onclick="registrarNome()">Registrar Nome</button>
         <p id="resultado"></p>
     </div>
 
