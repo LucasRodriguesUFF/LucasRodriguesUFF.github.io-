@@ -3,8 +3,8 @@ require([
   "esri/views/MapView",
   "esri/layers/FeatureLayer",
   "esri/identity/IdentityManager",
-  "esri/tasks/support/Query",
-  "esri/tasks/QueryTask",
+  "esri/rest/support/Query",
+  "esri/rest/QueryTask",
   "dojo/dom",
   "dojo/domReady!"
 ], function(Map, MapView, FeatureLayer, IdentityManager, Query, QueryTask, dom) {
@@ -50,13 +50,13 @@ require([
       authentication: userCredential // Passar a credencial do usuário
     });
 
-    // Query para buscar feições
+    // Criar a consulta para buscar feições
     const query = new Query();
     query.where = "1=1";  // Filtra todas as feições
     query.outFields = ["OBJECTID", "TRP"];
     query.returnGeometry = false;
 
-    // Executar a consulta na camada
+    // Executar a consulta na camada usando o novo QueryTask
     const queryTask = new QueryTask({
       url: featureLayerURL
     });
