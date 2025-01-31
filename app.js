@@ -11,7 +11,7 @@ require([
   let featureLayer;
 
   // Defina a URL do Feature Layer
-  const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Seu_Feature_Layer/FeatureServer/0"; // Altere para a URL correta
+  const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0"; // Altere para a URL correta
 
   // Crie a camada de feições
   featureLayer = new FeatureLayer({
