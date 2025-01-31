@@ -75,7 +75,12 @@ require([
         featureLayer.applyEdits({
           updateFeatures: updates
         }).then(function(response) {
-          document.getElementById("message").innerText = "Campo TRP atualizado com sucesso!";
+          // Confirmar se a edição foi realizada
+          if (response.updateFeatureResults && response.updateFeatureResults.length > 0) {
+            document.getElementById("message").innerText = "Campo TRP atualizado com sucesso!";
+          } else {
+            document.getElementById("message").innerText = "Nenhuma feição foi atualizada.";
+          }
         }).catch(function(error) {
           document.getElementById("message").innerText = "Erro ao atualizar o campo TRP: " + error.message;
         });
