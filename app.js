@@ -10,7 +10,7 @@ require([
 ], function(Map, MapView, FeatureLayer, IdentityManager, Query, QueryTask, dom) {
 
   // URL do Feature Layer
-  const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0"; // Altere para a URL correta
+  const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/For%C3%A7a_tarefa/FeatureServer"; // Altere para a URL correta
 
   // Função para garantir que o usuário esteja autenticado
   function ensureAuthenticated() {
