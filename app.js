@@ -9,14 +9,18 @@ require([
   "dojo/domReady!"
 ], function(Map, MapView, FeatureLayer, IdentityManager, Query, QueryTask, dom) {
 
-  // URL do Feature Layer
-  const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/For%C3%A7a_tarefa/FeatureServer"; // Altere para a URL correta
+  let featureLayer;
+  let userCredential;
 
-  // Função para garantir que o usuário esteja autenticado
-  function ensureAuthenticated() {
+  // URL do Feature Layer
+  const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0"; // Altere para a URL correta
+
+  // Função para autenticar o usuário
+  function login() {
     IdentityManager.getCredential(featureLayerURL).then(function(cred) {
-      // Se o usuário estiver autenticado, podemos seguir para a atualização
-      updateTRP();
+      userCredential = cred;
+      document.getElementById("message").innerText = "Usuário autenticado com sucesso!";
+      document.getElementById("loginButton").style.display = "none"; // Esconde o botão de login
     }).catch(function(error) {
       alert("Erro de autenticação: " + error.message);
     });
@@ -31,8 +35,13 @@ require([
       return;
     }
 
+    if (!userCredential) {
+      alert("Você precisa estar logado para realizar essa ação.");
+      return;
+    }
+
     // Criar a camada de feições
-    const featureLayer = new FeatureLayer({
+    featureLayer = new FeatureLayer({
       url: featureLayerURL
     });
 
@@ -72,6 +81,9 @@ require([
     });
   };
 
-  // Invocar a função para garantir a autenticação
-  ensureAuthenticated();
+  // Associa o botão de login
+  document.getElementById("loginButton").addEventListener("click", function() {
+    login();
+  });
+
 });
