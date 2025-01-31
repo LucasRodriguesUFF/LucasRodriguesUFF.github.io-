@@ -2,11 +2,10 @@ require([
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/FeatureLayer",
-    "esri/tasks/support/Query",
     "esri/Graphic",
     "dojo/dom",
     "dojo/on"
-], function (Map, MapView, FeatureLayer, Query, Graphic, dom, on) {
+], function (Map, MapView, FeatureLayer, Graphic, dom, on) {
 
     // URL da sua feature layer pública
     const featureLayerUrl = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
@@ -46,7 +45,7 @@ require([
                 latitude: -16.0
             },
             attributes: {
-                "TRP": nome  // Alterado para o campo TRP
+                "TRP": nome  // O nome será atribuído ao campo TRP
             }
         });
 
@@ -54,7 +53,7 @@ require([
         featureLayer.applyEdits({
             addFeatures: [graphic]
         }).then(function() {
-            resultado.textContent = `Nome "${nome}" registrado com sucesso!`;
+            resultado.textContent = `Nome "${nome}" registrado com sucesso no campo TRP!`;
         }).catch(function(error) {
             resultado.textContent = `Erro ao registrar o nome: ${error.message}`;
         });
