@@ -46,7 +46,7 @@ require([
                 latitude: -16.0
             },
             attributes: {
-                "TRP": Nome  // Nome do campo na sua feature layer
+                "TRP": nome  // Alterado para o campo TRP
             }
         });
 
