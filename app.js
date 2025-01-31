@@ -17,6 +17,7 @@ require([
 
   // Função para autenticar o usuário
   function login() {
+    // Verifique se o login foi feito corretamente
     IdentityManager.getCredential(featureLayerURL).then(function(cred) {
       userCredential = cred;
       console.log("Usuário autenticado com sucesso!");
@@ -26,7 +27,10 @@ require([
       document.getElementById("loginButton").style.display = "none"; // Esconde o botão de login
       document.getElementById("updateButton").disabled = false; // Habilita o botão de atualização
     }).catch(function(error) {
+      // Adicionando uma mensagem de erro mais clara caso a autenticação falhe
+      console.error("Erro de autenticação: ", error);
       alert("Erro de autenticação: " + error.message);
+      document.getElementById("message").innerText = "Falha na autenticação. Tente novamente.";
     });
   }
 
