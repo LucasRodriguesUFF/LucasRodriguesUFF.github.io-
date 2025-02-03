@@ -3,20 +3,20 @@ require([
     "esri/layers/FeatureLayer"
 ], function(IdentityManager, FeatureLayer) {
 
-    // Configuração do serviço
-    const FEATURE_LAYER_URL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
-    const AGOL_PORTAL_URL = "https://environpact.maps.arcgis.com";
+    // Lista de camadas para atualização
+    const FEATURE_LAYERS = [
+        "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0",
+        "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Linhas_TRP/FeatureServer/1",
+        "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Pontos_TRP/FeatureServer/5"
+    ];
 
-    // Elementos da interface
+    const AGOL_PORTAL_URL = "https://environpact.maps.arcgis.com";
     const dom = {
         updateButton: document.getElementById("updateButton"),
         message: document.getElementById("message"),
         trpInput: document.getElementById("trpInput")
     };
 
-    let featureLayer;
-
-    // Eventos
     dom.updateButton.addEventListener("click", handleUpdate);
 
     async function handleUpdate() {
@@ -27,21 +27,30 @@ require([
                 return;
             }
 
-            // Autenticação via ArcGIS Online
+            // Autenticação automática
             const credential = await IdentityManager.getCredential(AGOL_PORTAL_URL);
-            initializeFeatureLayer(credential);
-
-            showMessage("Buscando registros...", "info");
-            const features = await queryAllFeatures();
             
-            if (!features.length) {
-                showMessage("Nenhum registro encontrado", "warning");
+            // Coletar dados de todas as camadas
+            let totalFeatures = 0;
+            const layersData = [];
+            
+            for (const url of FEATURE_LAYERS) {
+                const layer = new FeatureLayer({ url, authentication: IdentityManager });
+                const features = await queryFeatures(layer);
+                if (features.length > 0) {
+                    layersData.push({ layer, features });
+                    totalFeatures += features.length;
+                }
+            }
+
+            if (totalFeatures === 0) {
+                showMessage("Nenhum registro encontrado nas camadas", "warning");
                 return;
             }
 
-            // Mostra o modal de confirmação
+            // Confirmação
             const confirmed = await showConfirmationModal(
-                `Deseja atualizar TODOS os ${features.length} registros?`
+                `Atualizar ${totalFeatures} registros em ${layersData.length} camadas?`
             );
 
             if (!confirmed) {
@@ -49,49 +58,43 @@ require([
                 return;
             }
 
-            showMessage("Atualizando...", "info");
-            const result = await updateAllFeatures(features, newValue);
-            
-            if (result.updateFeatureResults.length === features.length) {
-                showMessage(`${features.length} registros atualizados!`, "success");
-            } else {
-                throw new Error("Alguns registros não foram atualizados");
+            // Atualização em massa
+            let successCount = 0;
+            for (const { layer, features } of layersData) {
+                const result = await applyUpdates(layer, features, newValue);
+                successCount += result.updateFeatureResults.length;
             }
 
+            showMessage(
+                `${successCount}/${totalFeatures} registros atualizados com sucesso!`,
+                successCount === totalFeatures ? "success" : "warning"
+            );
+
         } catch (error) {
-            console.error("Erro na atualização:", error);
-            showMessage("Erro: " + error.message, "error");
+            console.error("Erro geral:", error);
+            showMessage("Erro na operação: " + error.message, "error");
         }
     }
 
-    async function queryAllFeatures() {
-        const query = featureLayer.createQuery();
+    async function queryFeatures(layer) {
+        const query = layer.createQuery();
         query.where = "TRP IS NULL OR TRP = ''";
-        query.outFields = ["ObjectID", "TRP"];
+        query.outFields = ["OBJECTID"];
         query.returnGeometry = false;
-        
-        const result = await featureLayer.queryFeatures(query);
+        const result = await layer.queryFeatures(query);
         return result.features;
     }
 
-    async function updateAllFeatures(features, newValue) {
+    async function applyUpdates(layer, features, value) {
         const edits = {
-            updateFeatures: features.map(feature => ({
+            updateFeatures: features.map(f => ({
                 attributes: {
-                    OBJECTID: feature.attributes.OBJECTID,
-                    TRP: newValue
+                    OBJECTID: f.attributes.OBJECTID,
+                    TRP: value
                 }
             }))
         };
-
-        return featureLayer.applyEdits(edits);
-    }
-
-    function initializeFeatureLayer(credential) {
-        featureLayer = new FeatureLayer({
-            url: FEATURE_LAYER_URL,
-            authentication: IdentityManager
-        });
+        return layer.applyEdits(edits);
     }
 
     function showMessage(text, type = "info") {
@@ -99,27 +102,24 @@ require([
         dom.message.className = `message-${type}`;
     }
 
-    // Função para mostrar o modal de confirmação
     function showConfirmationModal(message) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const modal = document.getElementById("confirmationModal");
-            const modalMessage = document.getElementById("modalMessage");
-            
-            modalMessage.textContent = message;
+            document.getElementById("modalMessage").textContent = message;
             modal.classList.remove("hidden");
 
-            const handleResponse = (confirmed) => {
+            const handler = (choice) => {
                 modal.classList.add("hidden");
-                document.getElementById("confirmYes").removeEventListener("click", yesHandler);
-                document.getElementById("confirmNo").removeEventListener("click", noHandler);
-                resolve(confirmed);
+                document.getElementById("confirmYes").removeEventListener("click", yes);
+                document.getElementById("confirmNo").removeEventListener("click", no);
+                resolve(choice);
             };
 
-            const yesHandler = () => handleResponse(true);
-            const noHandler = () => handleResponse(false);
+            const yes = () => handler(true);
+            const no = () => handler(false);
 
-            document.getElementById("confirmYes").addEventListener("click", yesHandler);
-            document.getElementById("confirmNo").addEventListener("click", noHandler);
+            document.getElementById("confirmYes").addEventListener("click", yes);
+            document.getElementById("confirmNo").addEventListener("click", no);
         });
     }
 });
