@@ -40,11 +40,6 @@ button {
     transition: opacity 0.3s;
 }
 
-#loginButton {
-    background-color: #007bff;
-    color: white;
-}
-
 #updateButton {
     background-color: #28a745;
     color: white;
