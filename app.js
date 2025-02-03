@@ -9,41 +9,15 @@ require([
 
     // Elementos da interface
     const dom = {
-        loginButton: document.getElementById("loginButton"),
         updateButton: document.getElementById("updateButton"),
         message: document.getElementById("message"),
-        username: document.getElementById("username"),
-        password: document.getElementById("password"),
         trpInput: document.getElementById("trpInput")
     };
 
     let featureLayer;
 
     // Eventos
-    dom.loginButton.addEventListener("click", handleLogin);
     dom.updateButton.addEventListener("click", handleUpdate);
-
-    async function handleLogin() {
-        try {
-            showMessage("Autenticando...", "info");
-            
-            const credential = await IdentityManager.getCredential(
-                AGOL_PORTAL_URL,
-                {
-                    username: dom.username.value.trim(),
-                    password: dom.password.value.trim()
-                }
-            );
-
-            initializeFeatureLayer(credential);
-            toggleUI(true);
-            showMessage("Autenticação bem-sucedida!", "success");
-
-        } catch (error) {
-            console.error("Erro de login:", error);
-            showMessage("Falha na autenticação: " + error.message, "error");
-        }
-    }
 
     async function handleUpdate() {
         try {
@@ -52,6 +26,10 @@ require([
                 showMessage("Digite um valor válido!", "error");
                 return;
             }
+
+            // Autenticação via ArcGIS Online
+            const credential = await IdentityManager.getCredential(AGOL_PORTAL_URL);
+            initializeFeatureLayer(credential);
 
             showMessage("Buscando registros...", "info");
             const features = await queryAllFeatures();
@@ -114,11 +92,6 @@ require([
             url: FEATURE_LAYER_URL,
             authentication: IdentityManager
         });
-    }
-
-    function toggleUI(loggedIn) {
-        document.getElementById("loginSection").style.display = loggedIn ? "none" : "block";
-        document.getElementById("updateSection").style.display = loggedIn ? "block" : "none";
     }
 
     function showMessage(text, type = "info") {
