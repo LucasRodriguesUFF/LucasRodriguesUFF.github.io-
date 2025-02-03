@@ -110,9 +110,7 @@ button:hover {
     background-color: #dc3545;
 }
 
-/* Exemplo: sobrescrevendo o background do container do login */
-.esri-identity-dialog,
-.esri-identity-dialog .dialog-container {
-  background-color: #ffffff !important;
+.calcite-scrim {
+    background-color: transparent !important;
 }
 
