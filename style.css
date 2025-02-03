@@ -1,20 +1,22 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #ffffff00;
+    background-color: transparent;
     margin: 0;
-    padding: 20px;
+    padding: 15px; /* Reduzi o padding do body */
     display: flex;
     justify-content: center;
     min-height: 100vh;
-}
 
 .container {
     background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    width: 100%;
+    padding: 1rem 1rem; /* Redução vertical (top/bottom) */
+    border-radius: 20px;
+    box-shadow: 0 10px 8px rgba(1, 1, 1, 0.1);
+    max-width: 300px;
+    width: 90%;
+    margin: auto;
+    box-sizing: border-box;
+    line-height: 1.2; /* Espaçamento entre linhas menor */
 }
 
 .hidden {
