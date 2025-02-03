@@ -1,30 +1,28 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Atualizar TRP</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://js.arcgis.com/4.29/"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atualizar TRP</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Certifique-se de carregar a API do ArcGIS -->
+  <script src="https://js.arcgis.com/4.29/"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Atualizar TRP</h1>
-        <input type="text" id="trpInput" placeholder="Novo valor TRP (texto)">
-        <button id="updateButton">Atualizar Todas as Camadas</button>
-        <p id="message"></p>
-    </div>
+  <div class="container">
+    <h1>Atualizar TRP</h1>
+    <input type="text" id="trpInput" placeholder="Novo valor TRP (texto)" />
+    <button id="updateButton">Atualizar Todas as Camadas</button>
+    <p id="message"></p>
+  </div>
 
-    <div id="confirmationModal" class="modal hidden">
-        <div class="modal-content">
-            <p id="modalMessage"></p>
-            <div class="modal-buttons">
-                <button id="confirmYes">Sim</button>
-                <button id="confirmNo">Não</button>
-            </div>
-        </div>
+  <!-- Modal de confirmação -->
+  <div id="confirmationModal" class="modal hidden">
+    <div class="modal-content">
+      <p id="modalMessage"></p>
+      <div class="modal-buttons">
+        <button id="confirmYes">Sim</button>
+        <button id="confirmNo">Não</button>
+      </div>
     </div>
-
-    <script src="app.js"></script>
-</body>
-</html>
+  </div>
