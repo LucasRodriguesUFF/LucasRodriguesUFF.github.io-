@@ -5,24 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Atualizar TRP</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Versão única da API (4.29) -->
     <script src="https://js.arcgis.com/4.29/"></script>
 </head>
 <body>
     <div class="container">
         <h1>Atualizar TRP</h1>
         
-        <!-- Formulário de autenticação -->
         <div id="loginSection">
             <input type="text" id="username" placeholder="Usuário AGOL">
             <input type="password" id="password" placeholder="Senha AGOL">
             <button id="loginButton">Fazer Login</button>
         </div>
 
-        <!-- Seção de atualização -->
         <div id="updateSection" class="hidden">
-            <input type="text" id="trpInput" placeholder="Novo valor TRP">
-            <button id="updateButton">Atualizar TRP</button>
+            <input type="text" id="trpInput" placeholder="Novo valor TRP (texto)">
+            <button id="updateButton">Atualizar Todos os Registros</button>
         </div>
 
         <p id="message"></p>
