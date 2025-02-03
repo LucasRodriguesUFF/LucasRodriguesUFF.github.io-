@@ -2,27 +2,32 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Atualizar TRP</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://js.arcgis.com/4.21/"></script>
+    <!-- Versão única da API (4.29) -->
+    <script src="https://js.arcgis.com/4.29/"></script>
 </head>
 <body>
     <div class="container">
         <h1>Atualizar TRP</h1>
-
-        <!-- Campos de login -->
-        <input type="text" id="username" placeholder="Usuário AGOL">
-        <input type="password" id="password" placeholder="Senha AGOL">
-        <button id="loginButton">Fazer Login</button>
         
-        <p id="message">Por favor, faça login para atualizar os dados.</p>
+        <!-- Formulário de autenticação -->
+        <div id="loginSection">
+            <input type="text" id="username" placeholder="Usuário AGOL">
+            <input type="password" id="password" placeholder="Senha AGOL">
+            <button id="loginButton">Fazer Login</button>
+        </div>
 
-        <!-- Atualização do TRP -->
-        <input type="text" id="trpInput" placeholder="Digite o novo TRP" disabled>
-        <button id="updateButton" disabled>Atualizar TRP</button>
+        <!-- Seção de atualização -->
+        <div id="updateSection" class="hidden">
+            <input type="number" id="trpInput" placeholder="Novo valor TRP">
+            <button id="updateButton">Atualizar TRP</button>
+        </div>
+
+        <p id="message"></p>
     </div>
 
-    <script src="https://js.arcgis.com/4.29/"></script>
+    <script src="script.js"></script>
 </body>
 </html>
