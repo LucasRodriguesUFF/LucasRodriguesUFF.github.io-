@@ -1,105 +1,91 @@
 require([
-  "esri/identity/OAuthInfo",
   "esri/identity/IdentityManager",
-  "esri/Map",
-  "esri/views/MapView",
   "esri/layers/FeatureLayer",
-  "esri/rest/support/Query",
-  "esri/rest/QueryTask",
-  "dojo/dom",
-  "dojo/domReady!"
-], function(OAuthInfo, IdentityManager, Map, MapView, FeatureLayer, Query, QueryTask, dom) {
+  "esri/request"
+], function(IdentityManager, FeatureLayer, esriRequest) {
 
-  let featureLayer;
-  let userCredential;
-  
   const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
+  let token = null;
 
-  // Configuração de autenticação via OAuth
-  const info = new OAuthInfo({
-    appId: "YOUR_APP_ID", // Substitua pelo seu App ID do ArcGIS Online
-    popup: true // Abre um pop-up para login
-  });
-
-  IdentityManager.registerOAuthInfos([info]);
-
+  // 🔐 Função de login com usuário e senha
   function login() {
-    IdentityManager.getCredential(featureLayerURL)
-      .then(function(cred) {
-        userCredential = cred;
-        console.log("Usuário autenticado:", cred);
-        document.getElementById("message").innerText = "Usuário autenticado!";
-        document.getElementById("loginButton").style.display = "none";
-        document.getElementById("updateButton").disabled = false;
-      })
-      .catch(function(error) {
-        console.error("Erro de autenticação:", error);
-        alert("Erro no login: " + error.message);
-        document.getElementById("message").innerText = "Falha ao autenticar.";
-      });
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (!username || !password) {
+      alert("Por favor, insira seu usuário e senha do ArcGIS Online.");
+      return;
+    }
+
+    esriRequest("https://www.arcgis.com/sharing/rest/generateToken", {
+      method: "post",
+      query: {
+        username: username,
+        password: password,
+        referer: window.location.origin,
+        f: "json"
+      }
+    }).then(function(response) {
+      token = response.data.token;
+      console.log("Token gerado:", token);
+      document.getElementById("message").innerText = "Usuário autenticado!";
+      document.getElementById("loginButton").disabled = true;
+      document.getElementById("trpInput").disabled = false;
+      document.getElementById("updateButton").disabled = false;
+    }).catch(function(error) {
+      console.error("Erro no login:", error);
+      alert("Falha no login. Verifique seu usuário e senha.");
+    });
   }
 
-  window.updateTRP = function() {
+  // 📝 Função para atualizar TRP
+  function updateTRP() {
     const trpValue = document.getElementById("trpInput").value;
     if (!trpValue) {
-      document.getElementById("message").innerText = "Insira um valor para o TRP!";
+      alert("Por favor, digite um valor para TRP!");
       return;
     }
 
-    if (!userCredential) {
-      alert("Você precisa estar logado!");
+    if (!token) {
+      alert("Você precisa estar logado para atualizar os dados.");
       return;
     }
 
-    featureLayer = new FeatureLayer({
-      url: featureLayerURL,
-      authentication: userCredential
-    });
-
-    const query = new Query();
-    query.where = "1=1";
-    query.outFields = ["OBJECTID", "TRP"];
-    query.returnGeometry = false;
-
-    const queryTask = new QueryTask({
+    const featureLayer = new FeatureLayer({
       url: featureLayerURL
     });
 
-    queryTask.execute(query).then(function(result) {
-      const features = result.features;
-      if (features.length > 0) {
-        console.log(`${features.length} feições encontradas.`);
-        const updates = features.map(function(feature) {
+    featureLayer.queryFeatures({
+      where: "1=1",
+      outFields: ["OBJECTID", "TRP"],
+      returnGeometry: false
+    }).then(function(result) {
+      if (result.features.length > 0) {
+        console.log(`${result.features.length} feições encontradas.`);
+
+        const updates = result.features.map(feature => {
           feature.attributes.TRP = trpValue;
           return feature;
         });
 
         featureLayer.applyEdits({
           updateFeatures: updates
-        }).then(function(response) {
+        }, { token }).then(function(response) {
           console.log("Resposta do applyEdits:", response);
-          if (response.updateFeatureResults && response.updateFeatureResults.length > 0) {
-            document.getElementById("message").innerText = "TRP atualizado com sucesso!";
-          } else {
-            document.getElementById("message").innerText = "Nenhuma feição foi atualizada.";
-          }
+          document.getElementById("message").innerText = "TRP atualizado com sucesso!";
         }).catch(function(error) {
-          document.getElementById("message").innerText = "Erro ao atualizar TRP: " + error.message;
+          document.getElementById("message").innerText = "Erro ao atualizar: " + error.message;
         });
+
       } else {
         document.getElementById("message").innerText = "Nenhuma feição encontrada.";
       }
     }).catch(function(error) {
       document.getElementById("message").innerText = "Erro na consulta: " + error.message;
     });
-  };
+  }
 
-  document.getElementById("loginButton").addEventListener("click", function() {
-    login();
-  });
-
-  document.getElementById("updateButton").addEventListener("click", function() {
-    updateTRP();
-  });
-
+  // 🎯 Eventos dos botões
+  document.getElementById("loginButton").addEventListener("click", login);
+  document.getElementById("updateButton").addEventListener("click", updateTRP);
 });
