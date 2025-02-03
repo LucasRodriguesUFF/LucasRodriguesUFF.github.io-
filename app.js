@@ -4,7 +4,7 @@ require([
 ], function(IdentityManager, FeatureLayer) {
 
     // Configurações
-    const FEATURE_LAYER_URL = "SUA_CAMADA_FEATURE_SERVICE";
+    const FEATURE_LAYER_URL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
     const AGOL_PORTAL_URL = "https://environpact.maps.arcgis.com";
 
     // Elementos DOM
