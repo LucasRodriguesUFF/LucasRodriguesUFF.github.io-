@@ -123,3 +123,18 @@ require([
         });
     }
 });
+
+const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    mutation.addedNodes.forEach(node => {
+      if (node.nodeType === 1 && node.matches('calcite-modal')) {
+        const scrim = node.shadowRoot.querySelector('.scrim');
+        if (scrim) {
+          scrim.remove();
+        }
+      }
+    });
+  });
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
