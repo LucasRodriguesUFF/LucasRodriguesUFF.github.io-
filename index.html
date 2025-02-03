@@ -11,18 +11,32 @@
     <div class="container">
         <h1>Atualizar TRP</h1>
         
+        <!-- Formulário de autenticação -->
         <div id="loginSection">
             <input type="text" id="username" placeholder="Usuário AGOL">
             <input type="password" id="password" placeholder="Senha AGOL">
             <button id="loginButton">Fazer Login</button>
         </div>
 
-        <div id="updateSection">
+        <!-- Seção de atualização -->
+        <div id="updateSection" class="hidden">
             <input type="text" id="trpInput" placeholder="Novo valor TRP (texto)">
             <button id="updateButton">Atualizar Todos os Registros</button>
         </div>
 
+        <!-- Mensagens de feedback -->
         <p id="message"></p>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="confirmationModal" class="modal hidden">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <div class="modal-buttons">
+                <button id="confirmYes">Sim</button>
+                <button id="confirmNo">Não</button>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
