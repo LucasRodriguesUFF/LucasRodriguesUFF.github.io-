@@ -68,19 +68,6 @@ button:hover {
     color: #721c24;
 }
 
-.message-info {
-    background-color: #d1ecf1;
-    border: 1px solid #bee5eb;
-    color: #0c5460;
-}
-
-.message-warning {
-    background-color: #fff3cd;
-    border: 1px solid #ffeeba;
-    color: #856404;
-}
-
-/* Estilos do Modal */
 .modal {
     position: fixed;
     top: 0;
