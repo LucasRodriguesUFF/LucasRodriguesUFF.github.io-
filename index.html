@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atualização de Feições</title>
+    <title>Atualizar TRP</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://js.arcgis.com/4.21/"></script>
 </head>
 <body>
-    <div id="container">
-        <button id="loginButton">Login no ArcGIS</button>
-        <br><br>
-        <label for="trpInput">Valor de TRP:</label>
-        <input type="text" id="trpInput">
+    <div class="container">
+        <h1>Atualizar TRP</h1>
+        <button id="loginButton">Fazer Login</button>
+        <p id="message">Por favor, faça login para atualizar os dados.</p>
+        
+        <input type="text" id="trpInput" placeholder="Digite o novo TRP" disabled>
         <button id="updateButton" disabled>Atualizar TRP</button>
-        <p id="message"></p>
     </div>
-    <script src="https://js.arcgis.com/4.21/"></script>
+
     <script src="app.js"></script>
 </body>
 </html>
