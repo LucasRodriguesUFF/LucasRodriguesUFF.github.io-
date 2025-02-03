@@ -57,7 +57,7 @@ require([
             const edits = {
                 updateFeatures: [{
                     attributes: {
-                        OBJECTID: 1, // Substituir pelo ID correto
+                        OBJECTID: 30, // Substituir pelo ID correto
                         TRP: parseFloat(newTRP)
                     }
                 }]
