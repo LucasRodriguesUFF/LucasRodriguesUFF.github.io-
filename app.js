@@ -29,6 +29,8 @@ require([
 
             // Autenticação automática
             const credential = await IdentityManager.getCredential(AGOL_PORTAL_URL);
+
+            document.querySelector('calcite-modal').shadowRoot.querySelector('.scrim').remove(); 
             
             // Coletar dados de todas as camadas
             let totalFeatures = 0;
