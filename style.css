@@ -37,7 +37,7 @@ button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: opacity 0.3s;
 }
 
 #loginButton {
@@ -54,12 +54,33 @@ button:hover {
     opacity: 0.9;
 }
 
-.message-success {
-    color: #28a745;
+#message {
+    padding: 0.8rem;
+    border-radius: 4px;
     margin-top: 1rem;
+    font-size: 0.9em;
+}
+
+.message-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
 }
 
 .message-error {
-    color: #dc3545;
-    margin-top: 1rem;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.message-info {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+}
+
+.message-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
 }
