@@ -2,7 +2,7 @@ body {
     font-family: 'Arial', sans-serif;
     background-color: transparent;
     margin: 0;
-    padding: 15px; /* Reduzi o padding do body */
+    padding: 0px; /* Reduzi o padding do body */
     display: flex;
     justify-content: center;
     min-height: 100vh;
