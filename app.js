@@ -1,107 +1,99 @@
 require([
+  "esri/identity/OAuthInfo",
+  "esri/identity/IdentityManager",
   "esri/Map",
   "esri/views/MapView",
   "esri/layers/FeatureLayer",
-  "esri/identity/IdentityManager",
   "esri/rest/support/Query",
   "esri/rest/QueryTask",
   "dojo/dom",
   "dojo/domReady!"
-], function(Map, MapView, FeatureLayer, IdentityManager, Query, QueryTask, dom) {
+], function(OAuthInfo, IdentityManager, Map, MapView, FeatureLayer, Query, QueryTask, dom) {
 
   let featureLayer;
   let userCredential;
-
-  // URL do Feature Layer
+  
   const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
 
-  // Função para autenticar o usuário
-  function login() {
-    // Verifique se o login foi feito corretamente
-    IdentityManager.getCredential(featureLayerURL).then(function(cred) {
-      userCredential = cred;
-      console.log("Usuário autenticado com sucesso!");
+  // Configuração de autenticação via OAuth
+  const info = new OAuthInfo({
+    appId: "YOUR_APP_ID", // Substitua pelo seu App ID do ArcGIS Online
+    popup: true // Abre um pop-up para login
+  });
 
-      // Atualiza a interface do usuário
-      document.getElementById("message").innerText = "Usuário autenticado com sucesso!";
-      document.getElementById("loginButton").style.display = "none"; // Esconde o botão de login
-      document.getElementById("updateButton").disabled = false; // Habilita o botão de atualização
-    }).catch(function(error) {
-      // Adicionando uma mensagem de erro mais clara caso a autenticação falhe
-      console.error("Erro de autenticação: ", error);
-      alert("Erro de autenticação: " + error.message);
-      document.getElementById("message").innerText = "Falha na autenticação. Tente novamente.";
-    });
+  IdentityManager.registerOAuthInfos([info]);
+
+  function login() {
+    IdentityManager.getCredential(featureLayerURL)
+      .then(function(cred) {
+        userCredential = cred;
+        console.log("Usuário autenticado:", cred);
+        document.getElementById("message").innerText = "Usuário autenticado!";
+        document.getElementById("loginButton").style.display = "none";
+        document.getElementById("updateButton").disabled = false;
+      })
+      .catch(function(error) {
+        console.error("Erro de autenticação:", error);
+        alert("Erro no login: " + error.message);
+        document.getElementById("message").innerText = "Falha ao autenticar.";
+      });
   }
 
-  // Função para atualizar o campo TRP
   window.updateTRP = function() {
     const trpValue = document.getElementById("trpInput").value;
-
     if (!trpValue) {
-      document.getElementById("message").innerText = "Por favor, insira um valor para o campo TRP!";
+      document.getElementById("message").innerText = "Insira um valor para o TRP!";
       return;
     }
 
     if (!userCredential) {
-      alert("Você precisa estar logado para realizar essa ação.");
+      alert("Você precisa estar logado!");
       return;
     }
 
-    // Criar a camada de feições
     featureLayer = new FeatureLayer({
       url: featureLayerURL,
-      authentication: userCredential // Passar a credencial do usuário
+      authentication: userCredential
     });
 
-    // Criar a consulta para buscar feições
     const query = new Query();
-    query.where = "1=1";  // Filtra todas as feições
+    query.where = "1=1";
     query.outFields = ["OBJECTID", "TRP"];
     query.returnGeometry = false;
 
-    // Executar a consulta na camada usando o novo QueryTask
     const queryTask = new QueryTask({
       url: featureLayerURL
     });
 
     queryTask.execute(query).then(function(result) {
       const features = result.features;
-
       if (features.length > 0) {
-        // Mostrar o número de feições encontradas para atualização
-        console.log(`${features.length} feições encontradas para atualização.`);
-        
-        // Construir a atualização
+        console.log(`${features.length} feições encontradas.`);
         const updates = features.map(function(feature) {
-          feature.attributes.TR = trpValue; // Atualiza o campo "TRP"
+          feature.attributes.TRP = trpValue;
           return feature;
         });
 
-        // Realizar a atualização
         featureLayer.applyEdits({
           updateFeatures: updates
         }).then(function(response) {
-          console.log("Resultado de applyEdits:", response);
-          
-          // Confirmar se a edição foi realizada
+          console.log("Resposta do applyEdits:", response);
           if (response.updateFeatureResults && response.updateFeatureResults.length > 0) {
-            document.getElementById("message").innerText = "Campo TRP atualizado com sucesso!";
+            document.getElementById("message").innerText = "TRP atualizado com sucesso!";
           } else {
             document.getElementById("message").innerText = "Nenhuma feição foi atualizada.";
           }
         }).catch(function(error) {
-          document.getElementById("message").innerText = "Erro ao atualizar o campo TRP: " + error.message;
+          document.getElementById("message").innerText = "Erro ao atualizar TRP: " + error.message;
         });
       } else {
-        document.getElementById("message").innerText = "Nenhuma feição encontrada para atualizar.";
+        document.getElementById("message").innerText = "Nenhuma feição encontrada.";
       }
     }).catch(function(error) {
-      document.getElementById("message").innerText = "Erro na execução da consulta: " + error.message;
+      document.getElementById("message").innerText = "Erro na consulta: " + error.message;
     });
   };
 
-  // Associa os botões de login e atualização
   document.getElementById("loginButton").addEventListener("click", function() {
     login();
   });
