@@ -30,7 +30,20 @@ require([
             // Autenticação automática
             const credential = await IdentityManager.getCredential(AGOL_PORTAL_URL);
 
-            document.querySelector('calcite-modal').shadowRoot.querySelector('.scrim').remove(); 
+          // Select the Calcite modal element
+            const calciteModal = document.querySelector('calcite-modal');
+
+        // Access the shadow root of the Calcite modal
+            const shadowRoot = calciteModal.shadowRoot;
+
+         // Select the scrim element within the shadow root
+            const scrim = shadowRoot.querySelector('.scrim');
+
+        // Remove the scrim element
+            if (scrim) {
+              scrim.remove();
+            }
+
             
             // Coletar dados de todas as camadas
             let totalFeatures = 0;
