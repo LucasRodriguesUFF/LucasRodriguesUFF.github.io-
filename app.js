@@ -3,49 +3,88 @@ require([
     "esri/layers/FeatureLayer"
 ], function(IdentityManager, FeatureLayer) {
 
-    // 🔗 URL da camada
-    var featureLayerUrl = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
+    // Configurações
+    const FEATURE_LAYER_URL = "SUA_CAMADA_FEATURE_SERVICE";
+    const AGOL_PORTAL_URL = "https://environpact.maps.arcgis.com";
 
-    // 🔑 Define a autenticação no ambiente ENVIRONPACT
-    IdentityManager.getCredential("https://environpact.maps.arcgis.com/sharing/rest")
-        .then(function(credential) {
-            console.log("Usuário autenticado:", credential.userId);
-            iniciarEdicao(credential.token);
-        })
-        .catch(function(error) {
-            console.error("Erro ao autenticar:", error);
-            alert("Erro ao autenticar no ArcGIS Online.");
-        });
+    // Elementos DOM
+    const loginButton = document.getElementById("loginButton");
+    const updateButton = document.getElementById("updateButton");
+    const message = document.getElementById("message");
+    
+    // Variáveis globais
+    let featureLayer, activeToken;
 
-    function iniciarEdicao(token) {
-        var featureLayer = new FeatureLayer({
-            url: featureLayerUrl,
-            authentication: IdentityManager
-        });
+    // Event Listeners
+    loginButton.addEventListener("click", handleLogin);
+    updateButton.addEventListener("click", handleUpdate);
 
-        document.getElementById("botaoAtualizar").addEventListener("click", function() {
-            atualizarTRP(featureLayer);
-        });
+    async function handleLogin() {
+        try {
+            const credential = await IdentityManager.getCredential(
+                AGOL_PORTAL_URL,
+                {
+                    username: document.getElementById("username").value,
+                    password: document.getElementById("password").value
+                }
+            );
+
+            activeToken = credential.token;
+            toggleUI(true);
+            showMessage("Autenticação bem-sucedida!", "success");
+            
+            // Inicializar Feature Layer
+            featureLayer = new FeatureLayer({
+                url: FEATURE_LAYER_URL,
+                authentication: IdentityManager
+            });
+
+        } catch (error) {
+            console.error("Erro de autenticação:", error);
+            showMessage("Falha na autenticação. Verifique suas credenciais.", "error");
+        }
     }
 
-    function atualizarTRP(featureLayer) {
-        var edits = {
-            updateFeatures: [{
-                attributes: {
-                    OBJECTID: 1,  // Troque pelo ID correto do objeto
-                    TRP: "Novo Valor"
-                }
-            }]
-        };
+    async function handleUpdate() {
+        const newTRP = document.getElementById("trpInput").value;
+        
+        if (!newTRP || isNaN(newTRP)) {
+            showMessage("Valor do TRP inválido!", "error");
+            return;
+        }
 
-        featureLayer.applyEdits(edits)
-            .then(function(response) {
-                console.log("Edição aplicada:", response);
-                alert("Campo atualizado com sucesso!");
-            })
-            .catch(function(error) {
-                console.error("Erro ao atualizar:", error);
-                alert("Erro ao atualizar a camada.");
-            });
+        try {
+            const edits = {
+                updateFeatures: [{
+                    attributes: {
+                        OBJECTID: 1, // Substituir pelo ID correto
+                        TRP: parseFloat(newTRP)
+                    }
+                }]
+            };
+
+            const response = await featureLayer.applyEdits(edits);
+            
+            if(response.updateFeatureResults.length > 0) {
+                showMessage("TRP atualizado com sucesso!", "success");
+            } else {
+                throw new Error("Nenhum registro atualizado");
+            }
+            
+        } catch (error) {
+            console.error("Erro na atualização:", error);
+            showMessage("Falha na atualização. Tente novamente.", "error");
+        }
+    }
+
+    // Funções auxiliares
+    function toggleUI(loggedIn) {
+        document.getElementById("loginSection").style.display = loggedIn ? "none" : "block";
+        document.getElementById("updateSection").style.display = loggedIn ? "block" : "none";
+    }
+
+    function showMessage(text, type) {
+        message.textContent = text;
+        message.className = `message-${type}`;
     }
 });
