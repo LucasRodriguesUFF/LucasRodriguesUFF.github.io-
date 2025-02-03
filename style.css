@@ -110,28 +110,18 @@ button:hover {
     background-color: #dc3545;
 }
 
-/* Customização do modal de login do ArcGIS */
-.esri-sign-in__container {
-    background: white !important;
-    border-radius: 10px !important;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2) !important;
+/* Tema personalizado para modais do ArcGIS */
+:root {
+  --calcite-ui-background: #ffffff !important;
+  --calcite-modal-scrim-background: rgba(255, 255, 255, 0.92) !important;
 }
 
 .esri-sign-in__overlay {
-    background: rgba(255,255,255,0.9) !important;
-    backdrop-filter: blur(3px) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
-.esri-sign-in__form {
-    padding: 25px !important;
-}
-
-.esri-sign-in__heading {
-    color: #333 !important;
-    font-size: 1.4rem !important;
-}
-
-.esri-sign-in__input {
-    border: 1px solid #ddd !important;
-    margin: 10px 0 !important;
+.esri-sign-in__container {
+  background: var(--calcite-ui-background) !important;
+  border-radius: 12px !important;
+  padding: 2rem !important;
 }
