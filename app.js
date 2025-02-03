@@ -1,91 +1,51 @@
 require([
-  "esri/identity/IdentityManager",
-  "esri/layers/FeatureLayer",
-  "esri/request"
-], function(IdentityManager, FeatureLayer, esriRequest) {
+    "esri/identity/IdentityManager",
+    "esri/layers/FeatureLayer"
+], function(IdentityManager, FeatureLayer) {
 
-  const featureLayerURL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
-  let token = null;
+    // 🔗 URL da camada
+    var featureLayerUrl = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
 
-  // 🔐 Função de login com usuário e senha
-  function login() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-
-    if (!username || !password) {
-      alert("Por favor, insira seu usuário e senha do ArcGIS Online.");
-      return;
-    }
-
-    esriRequest("https://www.arcgis.com/sharing/rest/generateToken", {
-      method: "post",
-      query: {
-        username: username,
-        password: password,
-        referer: window.location.origin,
-        f: "json"
-      }
-    }).then(function(response) {
-      token = response.data.token;
-      console.log("Token gerado:", token);
-      document.getElementById("message").innerText = "Usuário autenticado!";
-      document.getElementById("loginButton").disabled = true;
-      document.getElementById("trpInput").disabled = false;
-      document.getElementById("updateButton").disabled = false;
-    }).catch(function(error) {
-      console.error("Erro no login:", error);
-      alert("Falha no login. Verifique seu usuário e senha.");
-    });
-  }
-
-  // 📝 Função para atualizar TRP
-  function updateTRP() {
-    const trpValue = document.getElementById("trpInput").value;
-    if (!trpValue) {
-      alert("Por favor, digite um valor para TRP!");
-      return;
-    }
-
-    if (!token) {
-      alert("Você precisa estar logado para atualizar os dados.");
-      return;
-    }
-
-    const featureLayer = new FeatureLayer({
-      url: featureLayerURL
-    });
-
-    featureLayer.queryFeatures({
-      where: "1=1",
-      outFields: ["OBJECTID", "TRP"],
-      returnGeometry: false
-    }).then(function(result) {
-      if (result.features.length > 0) {
-        console.log(`${result.features.length} feições encontradas.`);
-
-        const updates = result.features.map(feature => {
-          feature.attributes.TRP = trpValue;
-          return feature;
+    // 🔑 Define a autenticação no ambiente ENVIRONPACT
+    IdentityManager.getCredential("https://environpact.maps.arcgis.com/sharing/rest")
+        .then(function(credential) {
+            console.log("Usuário autenticado:", credential.userId);
+            iniciarEdicao(credential.token);
+        })
+        .catch(function(error) {
+            console.error("Erro ao autenticar:", error);
+            alert("Erro ao autenticar no ArcGIS Online.");
         });
 
-        featureLayer.applyEdits({
-          updateFeatures: updates
-        }, { token }).then(function(response) {
-          console.log("Resposta do applyEdits:", response);
-          document.getElementById("message").innerText = "TRP atualizado com sucesso!";
-        }).catch(function(error) {
-          document.getElementById("message").innerText = "Erro ao atualizar: " + error.message;
+    function iniciarEdicao(token) {
+        var featureLayer = new FeatureLayer({
+            url: featureLayerUrl,
+            authentication: IdentityManager
         });
 
-      } else {
-        document.getElementById("message").innerText = "Nenhuma feição encontrada.";
-      }
-    }).catch(function(error) {
-      document.getElementById("message").innerText = "Erro na consulta: " + error.message;
-    });
-  }
+        document.getElementById("botaoAtualizar").addEventListener("click", function() {
+            atualizarTRP(featureLayer);
+        });
+    }
 
-  // 🎯 Eventos dos botões
-  document.getElementById("loginButton").addEventListener("click", login);
-  document.getElementById("updateButton").addEventListener("click", updateTRP);
+    function atualizarTRP(featureLayer) {
+        var edits = {
+            updateFeatures: [{
+                attributes: {
+                    OBJECTID: 1,  // Troque pelo ID correto do objeto
+                    TRP: "Novo Valor"
+                }
+            }]
+        };
+
+        featureLayer.applyEdits(edits)
+            .then(function(response) {
+                console.log("Edição aplicada:", response);
+                alert("Campo atualizado com sucesso!");
+            })
+            .catch(function(error) {
+                console.error("Erro ao atualizar:", error);
+                alert("Erro ao atualizar a camada.");
+            });
+    }
 });
