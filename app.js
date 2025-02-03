@@ -1,90 +1,120 @@
 require([
     "esri/identity/IdentityManager",
-    "esri/layers/FeatureLayer"
-], function(IdentityManager, FeatureLayer) {
+    "esri/layers/FeatureLayer",
+    "esri/core/promiseUtils"
+], function(IdentityManager, FeatureLayer, promiseUtils) {
 
-    // Configurações
+    // Configuração do serviço
     const FEATURE_LAYER_URL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
     const AGOL_PORTAL_URL = "https://environpact.maps.arcgis.com";
 
-    // Elementos DOM
-    const loginButton = document.getElementById("loginButton");
-    const updateButton = document.getElementById("updateButton");
-    const message = document.getElementById("message");
-    
-    // Variáveis globais
-    let featureLayer, activeToken;
+    // Elementos da interface
+    const dom = {
+        loginButton: document.getElementById("loginButton"),
+        updateButton: document.getElementById("updateButton"),
+        message: document.getElementById("message"),
+        username: document.getElementById("username"),
+        password: document.getElementById("password"),
+        trpInput: document.getElementById("trpInput")
+    };
 
-    // Event Listeners
-    loginButton.addEventListener("click", handleLogin);
-    updateButton.addEventListener("click", handleUpdate);
+    let featureLayer;
+
+    // Eventos
+    dom.loginButton.addEventListener("click", handleLogin);
+    dom.updateButton.addEventListener("click", handleUpdate);
 
     async function handleLogin() {
         try {
+            showMessage("Autenticando...", "info");
+            
             const credential = await IdentityManager.getCredential(
                 AGOL_PORTAL_URL,
                 {
-                    username: document.getElementById("username").value,
-                    password: document.getElementById("password").value
+                    username: dom.username.value.trim(),
+                    password: dom.password.value.trim()
                 }
             );
 
-            activeToken = credential.token;
+            initializeFeatureLayer(credential);
             toggleUI(true);
             showMessage("Autenticação bem-sucedida!", "success");
-            
-            // Inicializar Feature Layer
-            featureLayer = new FeatureLayer({
-                url: FEATURE_LAYER_URL,
-                authentication: IdentityManager
-            });
 
         } catch (error) {
-            console.error("Erro de autenticação:", error);
-            showMessage("Falha na autenticação. Verifique suas credenciais.", "error");
+            console.error("Erro de login:", error);
+            showMessage("Falha na autenticação: " + error.message, "error");
         }
     }
 
     async function handleUpdate() {
-        const newTRP = document.getElementById("trpInput").value;
-        
-        if (!newTRP || isNaN(newTRP)) {
-            showMessage("Valor do TRP inválido!", "error");
-            return;
-        }
-
         try {
-            const edits = {
-                updateFeatures: [{
-                    attributes: {
-                        OBJECTID: 30, // Substituir pelo ID correto
-                        TRP: parseFloat(newTRP)
-                    }
-                }]
-            };
-
-            const response = await featureLayer.applyEdits(edits);
-            
-            if(response.updateFeatureResults.length > 0) {
-                showMessage("TRP atualizado com sucesso!", "success");
-            } else {
-                throw new Error("Nenhum registro atualizado");
+            const newValue = dom.trpInput.value.trim();
+            if (!newValue) {
+                showMessage("Digite um valor válido!", "error");
+                return;
             }
+
+            showMessage("Buscando registros...", "info");
+            const features = await queryAllFeatures();
             
+            if (!features.length) {
+                showMessage("Nenhum registro encontrado", "warning");
+                return;
+            }
+
+            if (!confirm(`Deseja atualizar TODOS os ${features.length} registros?`)) return;
+
+            showMessage("Atualizando...", "info");
+            const result = await updateAllFeatures(features, newValue);
+            
+            if (result.updateFeatureResults.length === features.length) {
+                showMessage(`${features.length} registros atualizados!`, "success");
+            } else {
+                throw new Error("Alguns registros não foram atualizados");
+            }
+
         } catch (error) {
             console.error("Erro na atualização:", error);
-            showMessage("Falha na atualização. Tente novamente.", "error");
+            showMessage("Erro: " + error.message, "error");
         }
     }
 
-    // Funções auxiliares
+    async function queryAllFeatures() {
+        const query = featureLayer.createQuery();
+        query.outFields = ["OBJECTID"];
+        query.returnGeometry = false;
+        
+        const result = await featureLayer.queryFeatures(query);
+        return result.features;
+    }
+
+    async function updateAllFeatures(features, newValue) {
+        const edits = {
+            updateFeatures: features.map(feature => ({
+                attributes: {
+                    OBJECTID: feature.attributes.OBJECTID,
+                    TRP: newValue
+                }
+            }))
+        };
+
+        return featureLayer.applyEdits(edits);
+    }
+
+    function initializeFeatureLayer(credential) {
+        featureLayer = new FeatureLayer({
+            url: FEATURE_LAYER_URL,
+            authentication: IdentityManager
+        });
+    }
+
     function toggleUI(loggedIn) {
         document.getElementById("loginSection").style.display = loggedIn ? "none" : "block";
         document.getElementById("updateSection").style.display = loggedIn ? "block" : "none";
     }
 
-    function showMessage(text, type) {
-        message.textContent = text;
-        message.className = `message-${type}`;
+    function showMessage(text, type = "info") {
+        dom.message.textContent = text;
+        dom.message.className = `message-${type}`;
     }
 });
