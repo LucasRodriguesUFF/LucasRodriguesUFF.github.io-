@@ -1,8 +1,7 @@
 require([
     "esri/identity/IdentityManager",
-    "esri/layers/FeatureLayer",
-    "esri/core/promiseUtils"
-], function(IdentityManager, FeatureLayer, promiseUtils) {
+    "esri/layers/FeatureLayer"
+], function(IdentityManager, FeatureLayer) {
 
     // Configuração do serviço
     const FEATURE_LAYER_URL = "https://services7.arcgis.com/7GykRXe6kzSnGDiL/arcgis/rest/services/Força_tarefa/FeatureServer/0";
@@ -62,7 +61,15 @@ require([
                 return;
             }
 
-            if (!confirm(`Deseja atualizar TODOS os ${features.length} registros?`)) return;
+            // Mostra o modal de confirmação
+            const confirmed = await showConfirmationModal(
+                `Deseja atualizar TODOS os ${features.length} registros?`
+            );
+
+            if (!confirmed) {
+                showMessage("Atualização cancelada", "info");
+                return;
+            }
 
             showMessage("Atualizando...", "info");
             const result = await updateAllFeatures(features, newValue);
@@ -116,5 +123,29 @@ require([
     function showMessage(text, type = "info") {
         dom.message.textContent = text;
         dom.message.className = `message-${type}`;
+    }
+
+    // Função para mostrar o modal de confirmação
+    function showConfirmationModal(message) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById("confirmationModal");
+            const modalMessage = document.getElementById("modalMessage");
+            
+            modalMessage.textContent = message;
+            modal.classList.remove("hidden");
+
+            const handleResponse = (confirmed) => {
+                modal.classList.add("hidden");
+                document.getElementById("confirmYes").removeEventListener("click", yesHandler);
+                document.getElementById("confirmNo").removeEventListener("click", noHandler);
+                resolve(confirmed);
+            };
+
+            const yesHandler = () => handleResponse(true);
+            const noHandler = () => handleResponse(false);
+
+            document.getElementById("confirmYes").addEventListener("click", yesHandler);
+            document.getElementById("confirmNo").addEventListener("click", noHandler);
+        });
     }
 });
