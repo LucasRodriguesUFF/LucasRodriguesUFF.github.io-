@@ -88,7 +88,8 @@ require([
 
     async function queryAllFeatures() {
         const query = featureLayer.createQuery();
-        query.outFields = ["OBJECTID"];
+        query.where = "TRP IS NULL OR TRP = ''";
+        query.outFields = ["ObjectID", "TRP"];
         query.returnGeometry = false;
         
         const result = await featureLayer.queryFeatures(query);
