@@ -109,3 +109,29 @@ button:hover {
 #confirmNo {
     background-color: #dc3545;
 }
+
+/* Customização do modal de login do ArcGIS */
+.esri-sign-in__container {
+    background: white !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2) !important;
+}
+
+.esri-sign-in__overlay {
+    background: rgba(255,255,255,0.9) !important;
+    backdrop-filter: blur(3px) !important;
+}
+
+.esri-sign-in__form {
+    padding: 25px !important;
+}
+
+.esri-sign-in__heading {
+    color: #333 !important;
+    font-size: 1.4rem !important;
+}
+
+.esri-sign-in__input {
+    border: 1px solid #ddd !important;
+    margin: 10px 0 !important;
+}
