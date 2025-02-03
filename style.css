@@ -110,27 +110,9 @@ button:hover {
     background-color: #dc3545;
 }
 
-/* Alterar fundo do modal principal */
-.esri-identity-modal {
-  background: white !important;
+/* Exemplo: sobrescrevendo o background do container do login */
+.esri-identity-dialog,
+.esri-identity-dialog .dialog-container {
+  background-color: #ffffff !important;
 }
 
-/* Customizar o overlay/scrim */
-calcite-scrim::part(scrim) {
-  background: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(5px) !important;
-}
-
-/* Estilizar o container do formulário */
-.calcite-modal {
-  --calcite-ui-background: white !important;
-  --calcite-ui-foreground-1: #f0f0f0 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Botões e elementos internos */
-calcite-button[kind="brand"] {
-  --calcite-ui-brand: #0079c1 !important;
-  --calcite-ui-brand-hover: #00619b !important;
-}
